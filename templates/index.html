@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Shakespeare Writer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #181A20;
+            color: #F1F1F1;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(30, 32, 40, 0.95);
+            border-radius: 18px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.25);
+            padding: 2.5rem 2rem;
+            margin-top: 4rem;
+        }
+        h1 {
+            color: #F1F1F1;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        label, .form-label {
+            color: #C7C7D9;
+        }
+        .subtitle {
+            color: #C7C7D9;
+            font-size: 1.15rem;
+            margin-bottom: 2rem;
+        }
+        .subtitle-small {
+            color: #C7C7D9;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-control {
+            background: #2D2F3A;
+            color: #F1F1F1;
+            border: 1px solid #3A3B47;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.2s ease;
+        }
+        .form-control:focus {
+            background: #35363F;
+            color: #F1F1F1;
+            border: 1.5px solid #4A4B57;
+            box-shadow: 0 0 0 3px rgba(74, 75, 87, 0.2);
+        }
+        .btn-primary {
+            background: #23242B;
+            color: #F1F1F1;
+            border: none;
+            border-radius: 18px;
+            font-weight: 600;
+            padding: 0.6rem 2.2rem;
+            font-size: 1.1rem;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-primary:hover, .btn-primary:focus {
+            background: #35363F;
+            color: #FFF;
+        }
+        .btn-primary:disabled {
+            background: #1A1B22;
+            color: #6A6B7A;
+            cursor: not-allowed;
+        }
+        .alert-secondary {
+            background: #23242B;
+            color: #F1F1F1;
+            border: none;
+            border-radius: 12px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #3A3B47;
+            border-radius: 50%;
+            border-top-color: #F1F1F1;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #F1F1F1;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        #generated-text {
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #F1F1F1 #23242B; /* thumb color, track color for Firefox */
+        }
+        #generated-text::-webkit-scrollbar {
+            width: 10px;
+        }
+        #generated-text::-webkit-scrollbar-thumb {
+            background: #F1F1F1;
+            border-radius: 8px;
+        }
+        #generated-text::-webkit-scrollbar-track {
+            background: #23242B;
+            border-radius: 8px;
+        }
+        .tokenization-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #23242B;
+            border-radius: 12px;
+            border: 1px solid #3A3B47;
+        }
+        .tokenization-title {
+            color: #F1F1F1;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .tokenized-text {
+            background: #2D2F3A;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .token {
+            display: inline-block;
+            padding: 2px 4px;
+            margin: 1px;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .token:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .token-info {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: #1A1B22;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #C7C7D9;
+        }
+        .token-count {
+            color: #4A9EFF;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Shakespeare Writer</h1>
+        <a href="/about" class="btn btn-primary">About</a>
+    </div>
+    <p class="subtitle mb-4">by Francisco Méndez</p>
+    <form id="generate-form">
+        <div class="mb-3">
+            <label for="initial_text" class="form-label">Enter your initial sequence:</label>
+            <textarea class="form-control" id="initial_text" name="initial_text" rows="3" required></textarea>
+            <div class="mt-2">
+                <small style="color: #A0A0B0;">Examples: Start with a character name in uppercase (typical Shakespeare format)</small>
+                <div class="mt-1">
+                    <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-1" onclick="setExample('JULIET')">JULIET</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-1" onclick="setExample('ROMEO')">ROMEO</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-1" onclick="setExample('BENVOLIO')">BENVOLIO</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-1" onclick="setExample('TYBALT')">TYBALT</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-1" onclick="setExample('GLOUCESTER')">GLOUCESTER</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-1" onclick="setExample('QUEEN MARGARET')">QUEEN MARGARET</button>
+                </div>
+            </div>
+            <div class="mt-3" id="live-tokenization" style="display: none;">
+                <div class="tokenization-title">Live Tokenization Preview:</div>
+                <div class="tokenized-text" id="live-tokenized-text"></div>
+                <div class="token-info" id="live-token-info"></div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="num_tokens" class="form-label">Number of tokens to generate:</label>
+            <input type="number" class="form-control" id="num_tokens" name="num_tokens" min="50" max="1000" value="50" required>
+        </div>
+        <div class="mb-3">
+            <label for="temperature" class="form-label">Temperature: <span id="temperature-value">1.0</span></label>
+            <input type="range" class="form-range" id="temperature" name="temperature" min="0.1" max="2" step="0.05" value="1.0">
+            <div class="mt-2">
+                <small style="color: #A0A0B0;">Higher temperature = more creative, Lower temperature = more focused</small>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="top_k" class="form-label">Top K: <span id="topk-value">50</span></label>
+            <input type="range" class="form-range" id="top_k" name="top_k" min="1" max="150" step="1" value="50">
+            <div class="mt-2">
+                <small style="color: #A0A0B0;">Higher values = more word choices, Lower values = fewer choices</small>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="generate-btn">
+            <span id="btn-text">Generate Sequence</span>
+            <span id="loading-spinner" class="loading ms-2" style="display: none;"></span>
+        </button>
+    </form>
+    
+    <div class="mt-4" id="result-section" style="display: none;">
+        <h4>Generated Shakespearean Text:</h4>
+        <div class="alert alert-secondary" role="alert" id="generated-text">
+            <span id="text-content"></span>
+            <span id="typing-cursor" class="cursor"></span>
+        </div>
+    </div>
+    
+    <div class="tokenization-section" id="tokenization-section" style="display: none;">
+        <div class="tokenization-title">Input Text Tokenization:</div>
+        <div class="tokenized-text" id="tokenized-text"></div>
+        <div class="token-info" id="token-info"></div>
+    </div>
+</div>
+
+<script>
+document.getElementById('generate-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const btn = document.getElementById('generate-btn');
+    const btnText = document.getElementById('btn-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const resultSection = document.getElementById('result-section');
+    const textContent = document.getElementById('text-content');
+    const typingCursor = document.getElementById('typing-cursor');
+    const tokenizationSection = document.getElementById('tokenization-section');
+    const tokenizedText = document.getElementById('tokenized-text');
+    const tokenInfo = document.getElementById('token-info');
+    
+    // Get form data
+    const formData = new FormData(form);
+    const initialText = formData.get('initial_text');
+    const numTokens = formData.get('num_tokens');
+    const temperature = formData.get('temperature') || '1.0';
+    const topK = formData.get('top_k') || '50';
+    
+    // Show loading state
+    btn.disabled = true;
+    btnText.textContent = 'Generating...';
+    loadingSpinner.style.display = 'inline-block';
+    resultSection.style.display = 'block';
+    textContent.innerHTML = '';
+    typingCursor.style.display = 'inline-block';
+    
+    try {
+        // Call the streaming endpoint
+        const response = await fetch('/generate_stream', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                initial_text: initialText,
+                num_tokens: parseInt(numTokens),
+                temperature: parseFloat(temperature),
+                top_k: parseInt(topK)
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Animate the text appearing character by character
+            await animateText(data.text, textContent);
+            
+            // Display tokenization information
+            if (data.tokenization_info) {
+                displayTokenization(data.tokenization_info);
+            }
+        } else {
+            textContent.innerHTML = `Error: ${data.error}`;
+        }
+    } catch (error) {
+        textContent.innerHTML = `Error: ${error.message}`;
+    } finally {
+        // Hide loading state
+        btn.disabled = false;
+        btnText.textContent = 'Generate Sequence';
+        loadingSpinner.style.display = 'none';
+        typingCursor.style.display = 'none';
+    }
+});
+
+async function animateText(text, element) {
+    const words = text.split(' ');
+    let currentText = '';
+    const textContainer = document.getElementById('generated-text');
+    
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        currentText += (i > 0 ? ' ' : '') + word;
+        element.innerHTML = currentText;
+        
+        // Auto-scroll to the bottom as new content is added
+        textContainer.scrollTop = textContainer.scrollHeight;
+        
+        // Add a small delay between words for smooth effect
+        await new Promise(resolve => setTimeout(resolve, 50));
+    }
+}
+
+function displayTokenization(tokenizationInfo) {
+    const tokenizedText = document.getElementById('tokenized-text');
+    const tokenInfo = document.getElementById('token-info');
+    const tokenizationSection = document.getElementById('tokenization-section');
+    
+    // Generate color-coded tokens
+    const tokens = tokenizationInfo.tokens;
+    const colors = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+        '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+        '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D7BDE2'
+    ];
+    
+    let tokenizedHTML = '';
+    tokens.forEach((token, index) => {
+        const color = colors[index % colors.length];
+        const escapedToken = token.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        tokenizedHTML += `<span class="token" style="background-color: ${color}; color: #000;" title="Token ${index + 1}: '${escapedToken}'">${escapedToken}</span>`;
+    });
+    
+    tokenizedText.innerHTML = tokenizedHTML;
+    
+    // Display token information
+    const tokenCount = tokens.length;
+    const originalLength = tokenizationInfo.tokenized_text.length;
+    const avgTokenLength = (originalLength / tokenCount).toFixed(2);
+    
+    tokenInfo.innerHTML = `
+        <strong>Token Analysis:</strong><br>
+        • Total tokens: <span class="token-count">${tokenCount}</span><br>
+        • Original text length: <span class="token-count">${originalLength}</span> characters<br>
+        • Average token length: <span class="token-count">${avgTokenLength}</span> characters<br>
+        • Tokenization ratio: <span class="token-count">${(tokenCount / originalLength * 100).toFixed(1)}%</span> (tokens per character)
+    `;
+    
+    tokenizationSection.style.display = 'block';
+}
+
+// Add slider value display
+const tempSlider = document.getElementById('temperature');
+const tempValue = document.getElementById('temperature-value');
+tempSlider.addEventListener('input', function() {
+    tempValue.textContent = tempSlider.value;
+});
+const topkSlider = document.getElementById('top_k');
+const topkValue = document.getElementById('topk-value');
+topkSlider.addEventListener('input', function() {
+    topkValue.textContent = topkSlider.value;
+});
+
+// Function to set example text in the textarea
+function setExample(characterName) {
+    document.getElementById('initial_text').value = characterName;
+    // Trigger live tokenization for the example
+    updateLiveTokenization(characterName);
+}
+
+// Live tokenization preview
+let tokenizationTimeout;
+const textarea = document.getElementById('initial_text');
+
+textarea.addEventListener('input', function() {
+    const text = this.value;
+    
+    // Clear previous timeout
+    if (tokenizationTimeout) {
+        clearTimeout(tokenizationTimeout);
+    }
+    
+    // Set a new timeout to avoid too many requests
+    tokenizationTimeout = setTimeout(() => {
+        if (text.trim()) {
+            updateLiveTokenization(text);
+        } else {
+            hideLiveTokenization();
+        }
+    }, 500); // 500ms delay
+});
+
+async function updateLiveTokenization(text) {
+    try {
+        const response = await fetch('/tokenize', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: text })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            displayLiveTokenization(data.tokenization_info);
+        }
+    } catch (error) {
+        console.error('Error getting tokenization:', error);
+    }
+}
+
+function displayLiveTokenization(tokenizationInfo) {
+    const liveTokenization = document.getElementById('live-tokenization');
+    const liveTokenizedText = document.getElementById('live-tokenized-text');
+    const liveTokenInfo = document.getElementById('live-token-info');
+    
+    // Generate color-coded tokens
+    const tokens = tokenizationInfo.tokens;
+    const colors = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+        '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+        '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D7BDE2'
+    ];
+    
+    let tokenizedHTML = '';
+    tokens.forEach((token, index) => {
+        const color = colors[index % colors.length];
+        const escapedToken = token.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        tokenizedHTML += `<span class="token" style="background-color: ${color}; color: #000;" title="Token ${index + 1}: '${escapedToken}'">${escapedToken}</span>`;
+    });
+    
+    liveTokenizedText.innerHTML = tokenizedHTML;
+    
+    // Display token information
+    const tokenCount = tokens.length;
+    const originalLength = tokenizationInfo.tokenized_text.length;
+    const avgTokenLength = (originalLength / tokenCount).toFixed(2);
+    
+    liveTokenInfo.innerHTML = `
+        <strong>Live Token Analysis:</strong><br>
+        • Total tokens: <span class="token-count">${tokenCount}</span><br>
+        • Original text length: <span class="token-count">${originalLength}</span> characters<br>
+        • Average token length: <span class="token-count">${avgTokenLength}</span> characters<br>
+        • Tokenization ratio: <span class="token-count">${(tokenCount / originalLength * 100).toFixed(1)}%</span> (tokens per character)
+    `;
+    
+    liveTokenization.style.display = 'block';
+}
+
+function hideLiveTokenization() {
+    const liveTokenization = document.getElementById('live-tokenization');
+    liveTokenization.style.display = 'none';
+}
+</script>
+</body>
+</html> 

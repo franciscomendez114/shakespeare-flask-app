@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - AI Shakespeare Writer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #181A20;
+            color: #F1F1F1;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(30, 32, 40, 0.95);
+            border-radius: 18px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.25);
+            padding: 2.5rem 2rem;
+            margin-top: 4rem;
+        }
+        h1 {
+            color: #F1F1F1;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        h2, h3 {
+            color: #F1F1F1;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #C7C7D9;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+        .subtitle {
+            color: #C7C7D9;
+            font-size: 1.15rem;
+            margin-bottom: 2rem;
+        }
+        .btn-primary {
+            background: #23242B;
+            color: #F1F1F1;
+            border: none;
+            border-radius: 18px;
+            font-weight: 600;
+            padding: 0.6rem 2.2rem;
+            font-size: 1.1rem;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-primary:hover, .btn-primary:focus {
+            background: #35363F;
+            color: #FFF;
+        }
+        .feature-list {
+            background: #23242B;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .feature-list ul {
+            color: #C7C7D9;
+            margin-bottom: 0;
+        }
+        .feature-list li {
+            margin-bottom: 0.5rem;
+        }
+        .tech-stack {
+            background: #2D2F3A;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .tech-item {
+            display: inline-block;
+            background: #35363F;
+            color: #F1F1F1;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+        .quote {
+            background: #23242B;
+            border-left: 4px solid #4A4B57;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: #C7C7D9;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>About Shakespeare Writer</h1>
+        <a href="/" class="btn btn-primary">← Back to Generator</a>
+    </div>
+    
+    <p class="subtitle">by Francisco Méndez</p>
+    
+    <h2>🎭 What is Shakespeare Writer?</h2>
+    <p>
+        Shakespeare Writer is an AI-powered text generation application that creates Shakespearean-style dialogue and monologues. 
+        Using a custom-trained language model, it can generate authentic-sounding text that mimics the Bard's distinctive writing style, 
+        including his characteristic use of iambic pentameter, rich vocabulary, and dramatic flair.
+    </p>
+    
+    <h2>✨ Why I Built This</h2>
+    <p>
+        As a developer passionate about machine learning and mathematics, I wanted to create a practical application that 
+        demonstrates the power of AI text generation. Shakespeare's works provide an excellent dataset for this purpose - 
+        they're well-structured, have a consistent style, and are of reasonable length for training. This project showcases 
+        how mathematical concepts in machine learning can be applied to create engaging, interactive applications.
+    </p>
+    
+    <div class="quote">
+        "All the world's a stage, and all the men and women merely players."<br>
+        <small>- William Shakespeare, As You Like It</small>
+    </div>
+    
+    <h2>🚀 Key Features</h2>
+    <div class="feature-list">
+        <ul>
+            <li><strong>Custom AI Model:</strong> Trained specifically on Shakespeare's complete works</li>
+            <li><strong>Interactive Generation:</strong> Start with any character name or phrase</li>
+            <li><strong>Adjustable Parameters:</strong> Control creativity with temperature and top-k settings</li>
+            <li><strong>Real-time Animation:</strong> Watch text appear word by word with smooth scrolling</li>
+            <li><strong>Authentic Style:</strong> Maintains Shakespeare's characteristic language patterns</li>
+        </ul>
+    </div>
+    
+    <h2>🛠️ Technical Stack</h2>
+    <div class="tech-stack">
+        <div class="tech-item">Python</div>
+        <div class="tech-item">Flask</div>
+        <div class="tech-item">PyTorch</div>
+        <div class="tech-item">Transformers</div>
+        <div class="tech-item">HTML/CSS</div>
+        <div class="tech-item">JavaScript</div>
+        <div class="tech-item">Bootstrap</div>
+    </div>
+    
+    <h2>📚 How It Works</h2>
+    <p>
+        The application uses a fine-tuned language model that has been trained on Shakespeare's complete works. 
+        When you provide an initial prompt (like a character name), the model generates text that follows Shakespeare's 
+        writing patterns, including his vocabulary, sentence structure, and dramatic style.
+    </p>
+    
+    <p>
+        The generation process uses advanced mathematical techniques like temperature sampling and top-k filtering to ensure 
+        the output is both creative and coherent. These parameters allow fine-tuning of the probability distributions 
+        that govern text generation, demonstrating practical applications of statistical methods in machine learning.
+    </p>
+    
+    <h2>🎯 Future Enhancements</h2>
+    <p>
+        I'm constantly working to improve this application. Some planned features include:
+    </p>
+    <div class="feature-list">
+        <ul>
+            <li>Multiple character dialogue generation</li>
+            <li>Scene and act structure support</li>
+            <li>Export functionality for generated text</li>
+            <li>Historical context and annotations</li>
+            <li>Voice synthesis for dramatic readings</li>
+        </ul>
+    </div>
+    
+    <h2>📖 Educational Value</h2>
+    <p>
+        This project serves as a practical demonstration of machine learning concepts in action. It showcases how 
+        mathematical models can be trained on structured data to generate coherent text, making complex AI concepts 
+        accessible and interactive. The real-time animation feature allows users to observe the generation process, 
+        providing insight into how neural networks process and produce text.
+    </p>
+    
+    <div class="text-center mt-5">
+        <a href="/" class="btn btn-primary">Try the Generator</a>
+    </div>
+</div>
+</body>
+</html> 
